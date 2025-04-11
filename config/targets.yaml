@@ -1,0 +1,104 @@
+network:
+  e1000:
+    driver: E1000
+    bitcode: drivers/net/ethernet/intel/e1000/e1000.bc
+  e1000e:
+    driver: E1000E
+    bitcode: drivers/net/ethernet/intel/e1000e/e1000e.bc
+  rocker:
+    bitcode: drivers/net/ethernet/rocker/rocker.bc
+  vmxnet3:
+    bitcode: drivers/net/vmxnet3/vmxnet3.bc
+  ne2k_pci:
+    bitcode: drivers/net/ethernet/8390/ne2k-pci.bc
+  pcnet:
+    bitcode: drivers/net/ethernet/amd/pcnet32.bc
+  tulip:
+    bitcode: drivers/net/ethernet/dec/tulip/tulip.bc
+  rtl8139:
+    bitcode: drivers/net/ethernet/realtek/8139cp.bc
+  i82550:
+    bitcode: drivers/net/ethernet/intel/e100.bc
+  tpci200:
+    bitcode: drivers/ipack/carriers/tpci200.bc
+  sunhme:
+    bitcode: drivers/net/ethernet/sun/sunhme.bc
+  sungem:
+    bitcode: drivers/net/ethernet/sun/sungem.bc
+  igb:
+    bitcode: drivers/net/ethernet/intel/igb/igb.bc
+display:
+  cirrus_vga:
+    driver: DRM_CIRRUS_QEMU
+    bitcode: drivers/gpu/drm/tiny/cirrus.bc
+    #bitcode: drivers/video/fbdev/cirrusfb.bc
+  secondary-vga:
+    driver: DRM_BOCHS
+    bitcode: drivers/gpu/drm/tiny/bochs.bc
+  ati-vga:
+    driver: DRM_R128
+    bitcode: drivers/video/fbdev/aty/aty128fb.bc
+  vmware-svga:
+    driver: DRM_VMWGFX
+    bitcode: drivers/gpu/drm/vmwgfx/vmwgfx.bc
+  VGA:
+    driver: DRM_BOCHS
+    bitcode: drivers/gpu/drm/tiny/bochs.bc
+  bochs-display:
+    driver: DRM_BOCHS
+    bitcode: drivers/gpu/drm/tiny/bochs.bc
+  sm501:
+    bitcode: drivers/mfd/sm501.bc
+    #bitcode: drivers/video/fbdev/sm501fb.bc
+audio:
+  intel-hda:
+    driver: SND_HDA_INTEL
+    bitcode: sound/pci/hda/snd-hda-intel.bc
+  ac97:
+    driver: SND_INTEL8X0
+    bitcode: sound/pci/intel8x0.bc
+  ens1370:
+    bitcode: sound/pci/ens1370.bc
+  sb16:
+    bitcode: sound/pci/ens1370.bc
+  cs4231a:
+    bitcode: sound/pci/ens1370.bc
+usb:
+  xhci:
+    bitcode: drivers/usb/host/xhci_final.bc
+  ehci:
+    bitcode: drivers/usb/host/ehci_final.bc
+  ohci:
+    bitcode: drivers/usb/host/ohci_final.bc
+  uhci:
+    bitcode: drivers/usb/host/uhci-hcd.bc
+storage:
+  ahci:
+    bitcode: drivers/ata/ahci.bc
+  mptsas1068:
+    bitcode: drivers/message/fusion/mptsas_final.bc
+  pvscsi:
+    bitcode: drivers/scsi/vmw_pvscsi.bc
+  lsi53c810:
+    bitcode: drivers/scsi/sym53c8xx_2/sym53c8xx.bc
+  megasas:
+    bitcode: drivers/scsi/megaraid/megaraid_sas.bc
+  am53c974:
+    bitcode: drivers/scsi/am53c974.bc
+  fdc:
+    bitcode: drivers/block/floppy.bc
+  sdhci:
+    bitcode: drivers/mmc/host/sdhci_final.bc
+  nvme:
+    bitcode: drivers/nvme/host/nvme.bc
+  lsilogicsas:
+    bitcode: drivers/scsi/mpt3sas/mpt3sas.bc
+watchdog:
+  i6300esb:
+    bitcode: drivers/watchdog/i6300esb.bc
+i2c:
+  piix4:
+    bitcode: drivers/i2c/busses/i2c-piix4.bc
+virtio:
+  virtio:
+    bitcode: drivers/virtio/virtio_pci_final.bc

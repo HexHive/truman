@@ -1,0 +1,13 @@
+{
+    "allmod": {
+        "COMPILE_TEST": "d",
+        "KCOV": "d",
+        "KASAN": "d",
+        "KCSAN": "d",
+        "UBSAN": "d",
+        "GCOV_KERNEL": "d",
+        "DEBUG_INFO": "e",
+        "DRM_AMDGPU": "d",
+        "WERROR": "d"
+    }
+}

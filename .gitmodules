@@ -1,0 +1,18 @@
+[submodule "third_party/svf"]
+	path = third_party/svf
+	url = https://github.com/SVF-tools/SVF.git
+[submodule "third_party/z3"]
+	path = third_party/z3
+	url = https://github.com/Z3Prover/z3.git
+[submodule "third_party/protobuf"]
+	path = third_party/protobuf
+	url = https://github.com/protocolbuffers/protobuf.git
+[submodule "third_party/linux"]
+	path = third_party/linux
+	url = https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+[submodule "third_party/llvm"]
+	path = third_party/llvm
+	url = https://github.com/llvm/llvm-project.git
+[submodule "third_party/qemu"]
+	path = third_party/qemu
+	url = https://gitlab.com/qemu-project/qemu.git

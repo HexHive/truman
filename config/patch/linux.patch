@@ -1,0 +1,233 @@
+diff --git a/drivers/mmc/host/sdhci.h b/drivers/mmc/host/sdhci.h
+index f219bdea8f28..3be33ad0875a 100644
+--- a/drivers/mmc/host/sdhci.h
++++ b/drivers/mmc/host/sdhci.h
+@@ -674,49 +674,49 @@ struct sdhci_ops {
+ 
+ static inline void sdhci_writel(struct sdhci_host *host, u32 val, int reg)
+ {
+-	if (unlikely(host->ops->write_l))
+-		host->ops->write_l(host, val, reg);
+-	else
++	// if (unlikely(host->ops->write_l))
++	// 	host->ops->write_l(host, val, reg);
++	// else
+ 		writel(val, host->ioaddr + reg);
+ }
+ 
+ static inline void sdhci_writew(struct sdhci_host *host, u16 val, int reg)
+ {
+-	if (unlikely(host->ops->write_w))
+-		host->ops->write_w(host, val, reg);
+-	else
++	// if (unlikely(host->ops->write_w))
++	// 	host->ops->write_w(host, val, reg);
++	// else
+ 		writew(val, host->ioaddr + reg);
+ }
+ 
+ static inline void sdhci_writeb(struct sdhci_host *host, u8 val, int reg)
+ {
+-	if (unlikely(host->ops->write_b))
+-		host->ops->write_b(host, val, reg);
+-	else
++	// if (unlikely(host->ops->write_b))
++	// 	host->ops->write_b(host, val, reg);
++	// else
+ 		writeb(val, host->ioaddr + reg);
+ }
+ 
+ static inline u32 sdhci_readl(struct sdhci_host *host, int reg)
+ {
+-	if (unlikely(host->ops->read_l))
+-		return host->ops->read_l(host, reg);
+-	else
++	// if (unlikely(host->ops->read_l))
++	// 	return host->ops->read_l(host, reg);
++	// else
+ 		return readl(host->ioaddr + reg);
+ }
+ 
+ static inline u16 sdhci_readw(struct sdhci_host *host, int reg)
+ {
+-	if (unlikely(host->ops->read_w))
+-		return host->ops->read_w(host, reg);
+-	else
++	// if (unlikely(host->ops->read_w))
++	// 	return host->ops->read_w(host, reg);
++	// else
+ 		return readw(host->ioaddr + reg);
+ }
+ 
+ static inline u8 sdhci_readb(struct sdhci_host *host, int reg)
+ {
+-	if (unlikely(host->ops->read_b))
+-		return host->ops->read_b(host, reg);
+-	else
++	// if (unlikely(host->ops->read_b))
++	// 	return host->ops->read_b(host, reg);
++	// else
+ 		return readb(host->ioaddr + reg);
+ }
+ 
+diff --git a/drivers/net/ethernet/intel/igb/e1000_regs.h b/drivers/net/ethernet/intel/igb/e1000_regs.h
+index eb9f6da9208a..3ad7ff28c992 100644
+--- a/drivers/net/ethernet/intel/igb/e1000_regs.h
++++ b/drivers/net/ethernet/intel/igb/e1000_regs.h
+@@ -350,15 +350,10 @@
+ struct e1000_hw;
+ 
+ u32 igb_rd32(struct e1000_hw *hw, u32 reg);
++void igb_wr32(struct e1000_hw *hw, u32 reg, u32 val);
+ 
+ /* write operations, indexed using DWORDS */
+-#define wr32(reg, val) \
+-do { \
+-	u8 __iomem *hw_addr = READ_ONCE((hw)->hw_addr); \
+-	if (!E1000_REMOVED(hw_addr)) \
+-		writel((val), &hw_addr[(reg)]); \
+-} while (0)
+-
++#define wr32(reg, val) (igb_wr32(hw, reg, val))
+ #define rd32(reg) (igb_rd32(hw, reg))
+ 
+ #define wrfl() ((void)rd32(E1000_STATUS))
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 4431e7693d45..dddf44d4ab31 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -726,6 +726,12 @@ static void igb_cache_ring_register(struct igb_adapter *adapter)
+ 	}
+ }
+ 
++void igb_wr32(struct e1000_hw *hw, u32 reg, u32 val) {
++	u8 __iomem *hw_addr = READ_ONCE(hw->hw_addr);
++
++	writel(val, &hw_addr[reg]);
++}
++
+ u32 igb_rd32(struct e1000_hw *hw, u32 reg)
+ {
+ 	struct igb_adapter *igb = container_of(hw, struct igb_adapter, hw);
+diff --git a/sound/pci/intel8x0.c b/sound/pci/intel8x0.c
+index ae285c0a629c..ffc07aeddcd4 100644
+--- a/sound/pci/intel8x0.c
++++ b/sound/pci/intel8x0.c
+@@ -412,53 +412,81 @@ static const struct pci_device_id snd_intel8x0_ids[] = {
+ 
+ MODULE_DEVICE_TABLE(pci, snd_intel8x0_ids);
+ 
+-/*
+- *  Lowlevel I/O - busmaster
+- */
++#define igetbyte(chip, offset) \
++	(ioread8((chip)->bmaddr + (offset)))
+ 
+-static inline u8 igetbyte(struct intel8x0 *chip, u32 offset)
+-{
+-	return ioread8(chip->bmaddr + offset);
+-}
++#define igetword(chip, offset) \
++	(ioread16((chip)->bmaddr + (offset)))
+ 
+-static inline u16 igetword(struct intel8x0 *chip, u32 offset)
+-{
+-	return ioread16(chip->bmaddr + offset);
+-}
++#define igetdword(chip, offset) \
++	(ioread32((chip)->bmaddr + (offset)))
+ 
+-static inline u32 igetdword(struct intel8x0 *chip, u32 offset)
+-{
+-	return ioread32(chip->bmaddr + offset);
+-}
++#define iputbyte(chip, offset, val) \
++	(iowrite8((val), (chip)->bmaddr + (offset)))
+ 
+-static inline void iputbyte(struct intel8x0 *chip, u32 offset, u8 val)
+-{
+-	iowrite8(val, chip->bmaddr + offset);
+-}
++#define iputword(chip, offset, val) \
++	(iowrite16((val), (chip)->bmaddr + (offset)))
+ 
+-static inline void iputword(struct intel8x0 *chip, u32 offset, u16 val)
+-{
+-	iowrite16(val, chip->bmaddr + offset);
+-}
+-
+-static inline void iputdword(struct intel8x0 *chip, u32 offset, u32 val)
+-{
+-	iowrite32(val, chip->bmaddr + offset);
+-}
++#define iputdword(chip, offset, val) \
++	(iowrite32((val), (chip)->bmaddr + (offset)))
+ 
+ /*
+  *  Lowlevel I/O - AC'97 registers
+  */
+ 
+-static inline u16 iagetword(struct intel8x0 *chip, u32 offset)
+-{
+-	return ioread16(chip->addr + offset);
+-}
++#define iagetword(chip, offset) \
++	(ioread16((chip)->addr + (offset)))
+ 
+-static inline void iaputword(struct intel8x0 *chip, u32 offset, u16 val)
+-{
+-	iowrite16(val, chip->addr + offset);
+-}
++#define iaputword(chip, offset, val) \
++	(iowrite16((val), (chip)->addr + (offset)))
++
++/*
++ *  Lowlevel I/O - busmaster
++ */
++
++// static inline u8 igetbyte(struct intel8x0 *chip, u32 offset)
++// {
++// 	return ioread8(chip->bmaddr + offset);
++// }
++// 
++// static inline u16 igetword(struct intel8x0 *chip, u32 offset)
++// {
++// 	return ioread16(chip->bmaddr + offset);
++// }
++// 
++// static inline u32 igetdword(struct intel8x0 *chip, u32 offset)
++// {
++// 	return ioread32(chip->bmaddr + offset);
++// }
++// 
++// static inline void iputbyte(struct intel8x0 *chip, u32 offset, u8 val)
++// {
++// 	iowrite8(val, chip->bmaddr + offset);
++// }
++// 
++// static inline void iputword(struct intel8x0 *chip, u32 offset, u16 val)
++// {
++// 	iowrite16(val, chip->bmaddr + offset);
++// }
++// 
++// static inline void iputdword(struct intel8x0 *chip, u32 offset, u32 val)
++// {
++// 	iowrite32(val, chip->bmaddr + offset);
++// }
++
++/*
++ *  Lowlevel I/O - AC'97 registers
++ */
++
++// static inline u16 iagetword(struct intel8x0 *chip, u32 offset)
++// {
++// 	return ioread16(chip->addr + offset);
++// }
++// 
++// static inline void iaputword(struct intel8x0 *chip, u32 offset, u16 val)
++// {
++// 	iowrite16(val, chip->addr + offset);
++// }
+ 
+ /*
+  *  Basic I/O

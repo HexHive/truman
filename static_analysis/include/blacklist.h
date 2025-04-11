@@ -1,0 +1,57 @@
+#ifndef _BLACKLIST_H_
+#define _BLACKLIST_H_
+
+#include <vector>
+#include <string>
+
+const std::vector<std::string> black_list{
+	"devm_kzalloc",
+	"dev_set_drvdata",
+	"dev_get_drvdata",
+	"iowrite64",
+	"iowrite32",
+	"iowrite16",
+	"iowrite8",
+	"writeq",
+	"writel",
+	"writew",
+	"writeb",
+	"outl",
+	"outw",
+	"outb",
+	"ioread64",
+	"ioread32",
+	"ioread16",
+	"ioread8",
+	"readq",
+	"readl",
+	"readw",
+	"readb",
+	"inl",
+	"inw",
+	"inb",
+	"kasan_check_read",
+	"kasan_check_write",
+	"kcsan_check_access",
+	"dma_map_single_attrs",
+	"vga_r",
+	"vga_w",
+	"vga_w_fast",
+	"__ew32",
+	"e1000_io_write",
+	"dma_alloc_coherent",
+	"llvm.dbg.value",
+	"pci_set_drvdata",
+	"netdev_priv",
+	"netif_msg_init",
+	"dma_set_mask_and_coherent",
+	"netif_napi_add",
+	"pci_name",
+	"dev_name",
+	"kobject_name",
+	"kcalloc",
+	"kmalloc",
+	"phys_to_virt",
+};
+
+#endif
