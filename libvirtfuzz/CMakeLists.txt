@@ -14,7 +14,8 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # Set the build type options
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fno-omit-frame-pointer -fno-limit-debug-info")
+set(CMAKE_C_FLAGS_DEBUG "-g -O0 -fno-omit-frame-pointer -fno-limit-debug-info")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 set(CMAKE_CXX_FLAGS_LOG "-O3 -DSTATISTICS")
 set(CMAKE_CXX_FLAGS_STATISTICS "-O3 -DSTATISTICS -DNDEBUG")
@@ -42,15 +43,33 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/incl
 set(SRC src/generator.cpp src/mutator.cpp src/virtfuzz.cpp src/device.cpp src/common.cpp src/statistics.cpp ${PROTO_SRCS})
 
 # Create a shared library
-add_library(virtfuzz SHARED ${SRC})
+add_library(libvirtfuzz SHARED ${SRC})
+set_target_properties(libvirtfuzz PROPERTIES OUTPUT_NAME virtfuzz)
+
+# Create a static library for debugging
+add_library(libvirtfuzz_static STATIC ${SRC})
+set_target_properties(libvirtfuzz_static PROPERTIES OUTPUT_NAME virtfuzz)
 
 # Link against protobuf library and conditionally link AddressSanitizer for Debug build
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  target_link_libraries(virtfuzz protobuf::libprotobuf -fsanitize=address)
+  target_link_libraries(libvirtfuzz protobuf::libprotobuf -fsanitize=address)
+  target_link_libraries(libvirtfuzz_static protobuf::libprotobuf -fsanitize=address)
 else()
-  target_link_libraries(virtfuzz protobuf::libprotobuf)
+  target_link_libraries(libvirtfuzz protobuf::libprotobuf)
+  target_link_libraries(libvirtfuzz_static protobuf::libprotobuf)
+endif()
+
+# Create an executable for debugging
+add_executable(virtfuzz virtfuzz.c)
+
+# Link the executable against the static library for Debug, shared for others
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  target_link_libraries(virtfuzz libvirtfuzz_static -fsanitize=address)
+else()
+  target_link_libraries(virtfuzz libvirtfuzz)
 endif()
 
 # Install target and headers
-install(TARGETS virtfuzz DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(TARGETS libvirtfuzz DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(TARGETS virtfuzz DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 install(FILES include/virtfuzz.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
