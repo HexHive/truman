@@ -92,9 +92,11 @@ int main(int argc, char *argv[]) {
 
     printf("Device model initialized successfully\n");
 
-    add_interface(INTERFACE_TYPE_MMIO, 0xFFFF0000, 0x1000, "vmxnet-00", 1, 4);
-    add_interface(INTERFACE_TYPE_MMIO, 0xFFFF1000, 0x1000, "vmxnet-01", 1, 4);
-    add_interface( INTERFACE_TYPE_DMA, 0x00000000, 0x0001, "vmxnetDMA", 0, 0);
+    // Initialize three interfaces
+    add_interface(INTERFACE_TYPE_MMIO, 0xFFFF0000, 0x1000, "mmio-00", 1, 4);
+    add_interface(INTERFACE_TYPE_MMIO, 0xFFFF1000, 0x1000, "mmio-01", 1, 4);
+    add_interface(INTERFACE_TYPE_MMIO, 0xFFFF2000, 0x1000, "mmio-02", 1, 4);
+    add_interface( INTERFACE_TYPE_DMA, 0x00000000, 0x0001,  "dma-00", 0, 0);
 
     // Print available interfaces
     printf("\nAvailable interfaces:\n");
@@ -105,11 +107,11 @@ int main(int argc, char *argv[]) {
     generate_random_bytes(Data, 4096);
     size_t num_messages = get_message_sequence(Data, 4096, &message_sequence);
     printf("\n[FUZZ] num_messages: %ld.\n", num_messages);
- 
+
     for (size_t i = 0; i < num_messages; ++i) {
         // messageToReadableString(&message_sequence.messages[i]);
     }
     cleanup(&message_sequence);
- 
+
     return 0;
 }
